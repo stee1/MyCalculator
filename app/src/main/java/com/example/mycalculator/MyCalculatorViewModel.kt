@@ -1,14 +1,10 @@
 package com.example.mycalculator
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.mycalculator.MyCalculatorAction.Companion.convertOperationFromStr
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.Locale
 
 class MyCalculatorViewModel : ViewModel() {
     companion object {
@@ -57,21 +53,20 @@ class MyCalculatorViewModel : ViewModel() {
         val number2 = state.number2.toBigDecimalOrNull()
 
         if (number1 != null && number2 != null) {
-            var result = when (state.operation) {
+            val result = when (state.operation) {
                 is MyCalculatorAction.Operation.Add -> number1 + number2
                 is MyCalculatorAction.Operation.Divide -> number1 / number2
                 is MyCalculatorAction.Operation.Multiply -> number1 * number2
                 is MyCalculatorAction.Operation.Subtract -> number1 - number2
                 else -> return
             }
-            var resultStr = result.toString()
             state = state.copy(
-                result = resultStr,
+                result = result.toString(),
                 isFinished = isFinished,
                 // TODO: fix history (currently every operation is added)
                 history = state.history
                         + state.number1 + state.operation?.symbol
-                        + state.number2 + "=" + resultStr + "\n"
+                        + state.number2 + "=" + result.toString() + "\n"
             )
         }
     }

@@ -1,7 +1,5 @@
 package com.example.mycalculator
 
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,7 +18,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
