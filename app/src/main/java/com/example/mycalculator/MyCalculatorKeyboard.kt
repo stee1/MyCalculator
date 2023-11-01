@@ -18,6 +18,7 @@ import com.example.mycalculator.ui.theme.White
 @Composable
 fun MyCalculatorKeyboard(
     modifier: Modifier = Modifier,
+    state: MyCalculatorState,
     onAction: (MyCalculatorAction) -> Unit
 ) {
     Box(modifier = modifier) {
@@ -30,7 +31,7 @@ fun MyCalculatorKeyboard(
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 MyCalculatorKeyboardButton(
-                    text = "C",
+                    text = if (state.number1.isEmpty()) "AC" else "C",
                     textColor = Blue,
                     modifier = Modifier
                         .weight(1f)

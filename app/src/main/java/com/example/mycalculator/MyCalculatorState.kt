@@ -1,6 +1,7 @@
 package com.example.mycalculator
 
 data class MyCalculatorState(
+    val history: String = "",
     val number1: String = "",
     val number2: String = "",
     val operation: MyCalculatorAction.Operation? = null,

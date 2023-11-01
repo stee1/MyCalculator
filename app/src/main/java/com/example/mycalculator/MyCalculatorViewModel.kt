@@ -24,8 +24,15 @@ class MyCalculatorViewModel : ViewModel() {
             is MyCalculatorAction.Decimal -> enterDecimal()
             is MyCalculatorAction.Delete -> deleteLastCharacter()
             is MyCalculatorAction.Calculate -> calculate(isFinished = true)
-            is MyCalculatorAction.Clear -> state = MyCalculatorState()
+            is MyCalculatorAction.Clear -> clear()
             is MyCalculatorAction.Percentage -> calculatePercentage()
+        }
+    }
+
+    private fun clear() {
+        state = when (state.number1) {
+            "" -> MyCalculatorState()
+            else -> MyCalculatorState(history = state.history)
         }
     }
 
@@ -34,7 +41,8 @@ class MyCalculatorViewModel : ViewModel() {
             state.number1.isNotEmpty() && state.operation == null ->
                 state.copy(
                     number1 = (state.number1.toDouble() / 100).toString(),
-                    result = (state.number1.toDouble() / 100).toString())
+                    result = (state.number1.toDouble() / 100).toString()
+                )
 
             state.number2.isNotEmpty() ->
                 state.copy(number2 = (state.number1.toDouble() * state.number2.toDouble() / 100).toString())
@@ -45,20 +53,25 @@ class MyCalculatorViewModel : ViewModel() {
     }
 
     private fun calculate(isFinished: Boolean = false) {
-        val number1 = state.number1.toDoubleOrNull()
-        val number2 = state.number2.toDoubleOrNull()
+        val number1 = state.number1.toBigDecimalOrNull()
+        val number2 = state.number2.toBigDecimalOrNull()
 
         if (number1 != null && number2 != null) {
-            val result = when (state.operation) {
+            var result = when (state.operation) {
                 is MyCalculatorAction.Operation.Add -> number1 + number2
                 is MyCalculatorAction.Operation.Divide -> number1 / number2
                 is MyCalculatorAction.Operation.Multiply -> number1 * number2
                 is MyCalculatorAction.Operation.Subtract -> number1 - number2
                 else -> return
             }
+            var resultStr = result.toString()
             state = state.copy(
-                result = result.toString(),
-                isFinished = isFinished
+                result = resultStr,
+                isFinished = isFinished,
+                // TODO: fix history (currently every operation is added)
+                history = state.history
+                        + state.number1 + state.operation?.symbol
+                        + state.number2 + "=" + resultStr + "\n"
             )
         }
     }
@@ -71,6 +84,7 @@ class MyCalculatorViewModel : ViewModel() {
                     result = state.number1,
                     isFinished = false
                 )
+
             state.number2.isNotEmpty() ->
                 state.copy(
                     number2 = state.number2.dropLast(1)
@@ -115,7 +129,10 @@ class MyCalculatorViewModel : ViewModel() {
     private fun enterOperation(symbol: String) {
         if (state.number1.isNotEmpty()) {
             if (state.isFinished) {
-                state = MyCalculatorState(number1 = state.result)
+                state = MyCalculatorState(
+                    number1 = state.result,
+                    history = state.history
+                )
             }
             if (state.operation == null) { // operation clicked first time
                 state = state.copy(
@@ -127,7 +144,8 @@ class MyCalculatorViewModel : ViewModel() {
                     calculate()
                     MyCalculatorState(
                         number1 = state.result,
-                        operation = convertOperationFromStr(symbol)
+                        operation = convertOperationFromStr(symbol),
+                        history = state.history
                     )
                 } else {
                     state.copy(operation = convertOperationFromStr(symbol))
@@ -138,7 +156,7 @@ class MyCalculatorViewModel : ViewModel() {
 
     private fun enterNumber(number: Int) {
         if (state.isFinished) {
-            state = MyCalculatorState()
+            state = MyCalculatorState(history = state.history)
         }
         if (state.operation == null) { // entering first number
             // leading zeros

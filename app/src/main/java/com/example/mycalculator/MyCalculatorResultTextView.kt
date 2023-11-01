@@ -2,8 +2,12 @@ package com.example.mycalculator
 
 import android.util.Log
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -43,18 +48,22 @@ fun MyCalculatorResultTextView(
         regularFontSizeDynamic = 20.sp
         increasedFontSizeDynamic = 34.sp
     }
+    val scroll = rememberScrollState()
+    val scope = rememberCoroutineScope()
     Box(modifier = modifier) {
+        SideEffect {
+            scope.launch { scroll.scrollTo(scroll.maxValue) }
+        }
         Text(
             text = buildAnnotatedString {
-                // TODO: implement history
                 // History
-//                withStyle(
-//                    style = SpanStyle(
-//                        color = Color(0xFFBDBDBD)
-//                    )
-//                ) {
-//                    append("5+5\n=5\n\n2+4\n=7\n\n")
-//                }
+                withStyle(
+                    style = SpanStyle(
+                        color = Color(0xFFBDBDBD)
+                    )
+                ) {
+                    append("${state.history}\n")
+                }
                 // Current operation
                 withStyle(
                     style = SpanStyle(
@@ -77,7 +86,11 @@ fun MyCalculatorResultTextView(
                 ) {
                     append(formatNumber(state.result))
                 }
-            }, modifier = Modifier.align(Alignment.BottomEnd), textAlign = TextAlign.End
+            },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .verticalScroll(scroll),
+            textAlign = TextAlign.End
         )
     }
 }
