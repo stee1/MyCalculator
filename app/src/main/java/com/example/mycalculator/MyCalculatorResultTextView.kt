@@ -1,6 +1,7 @@
 package com.example.mycalculator
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -50,7 +51,7 @@ fun MyCalculatorResultTextView(
     }
     val scroll = rememberScrollState()
     val scope = rememberCoroutineScope()
-    Box(modifier = modifier) {
+    Box(modifier = modifier.verticalScroll(scroll)) {
         SideEffect {
             scope.launch { scroll.scrollTo(scroll.maxValue) }
         }
@@ -88,8 +89,7 @@ fun MyCalculatorResultTextView(
                 }
             },
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .verticalScroll(scroll),
+                .align(Alignment.BottomEnd),
             textAlign = TextAlign.End
         )
     }
